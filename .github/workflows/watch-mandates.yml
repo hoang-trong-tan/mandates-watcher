@@ -1,0 +1,42 @@
+name: Watch phase3/mandates
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: watch-mandates
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new commits and notify
+        env:
+          GH_READ_TOKEN: ${{ secrets.GH_READ_TOKEN }}
+          WATCH_REPO: TechX-Corp/xbrain-learners
+          WATCH_PATH: phase3/mandates
+          WATCH_BRANCH: main
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+          WHATSAPP_PHONE_ID: ${{ secrets.WHATSAPP_PHONE_ID }}
+          WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
+          ZALO_APP_ID: ${{ secrets.ZALO_APP_ID }}
+          ZALO_APP_SECRET: ${{ secrets.ZALO_APP_SECRET }}
+          ZALO_REFRESH_TOKEN: ${{ secrets.ZALO_REFRESH_TOKEN }}
+          ZALO_TO: ${{ secrets.ZALO_TO }}
+        run: node scripts/check-and-notify.mjs
+
+      - name: Persist state (last commit seen / rotated Zalo refresh token)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state/
+          git diff --cached --quiet || git commit -m "chore: update watcher state"
+          git push

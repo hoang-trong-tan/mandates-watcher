@@ -1,0 +1,14 @@
+{
+  "name": "mandates-watcher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Poll TechX-Corp/xbrain-learners (phase3/mandates) for new commits and notify via WhatsApp + Zalo",
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-and-notify.mjs",
+    "zalo:auth": "node scripts/zalo-oauth-helper.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
