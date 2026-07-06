@@ -78,6 +78,32 @@ async function sendWhatsApp(text) {
   }
 }
 
+async function sendTelegram(text) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const to = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !to) {
+    console.log("[telegram] not configured, skipping");
+    return;
+  }
+  for (const chatId of to.split(",").map((s) => s.trim()).filter(Boolean)) {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        disable_web_page_preview: true,
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      console.error(`[telegram] send to ${chatId} failed:`, JSON.stringify(data));
+    } else {
+      console.log(`[telegram] sent to ${chatId}`);
+    }
+  }
+}
+
 // Zalo OA access tokens expire ~25h; refresh tokens rotate on every use.
 // See scripts/zalo-oauth-helper.mjs for the one-time initial authorization.
 async function refreshZaloAccessToken() {
@@ -174,7 +200,11 @@ async function main() {
   for (const commit of newCommits) {
     const message = formatMessage(commit);
     console.log(message);
-    await Promise.allSettled([sendWhatsApp(message), sendZalo(message)]);
+    await Promise.allSettled([
+      sendTelegram(message),
+      sendWhatsApp(message),
+      sendZalo(message),
+    ]);
   }
 
   writeState(SHA_FILE, latestSha);

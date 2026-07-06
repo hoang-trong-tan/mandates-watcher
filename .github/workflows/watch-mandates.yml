@@ -24,6 +24,8 @@ jobs:
           WATCH_REPO: TechX-Corp/xbrain-learners
           WATCH_PATH: phase3/mandates
           WATCH_BRANCH: main
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
           WHATSAPP_PHONE_ID: ${{ secrets.WHATSAPP_PHONE_ID }}
           WHATSAPP_TO: ${{ secrets.WHATSAPP_TO }}
